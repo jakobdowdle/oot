@@ -14,13 +14,13 @@ SHELL = /usr/bin/env bash
 -include .make_options.mk
 
 # If COMPARE is 1, check the output md5sum after building. Set to 0 when modding.
-COMPARE ?= 1
+COMPARE ?= 0
 # If NON_MATCHING is 1, define the NON_MATCHING C flag when building. Set to 1 when modding.
-NON_MATCHING ?= 0
+NON_MATCHING ?= 1
 # If ORIG_COMPILER is 1, compile with QEMU_IRIX and the original compiler.
 ORIG_COMPILER ?= 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
-COMPILER ?= ido
+COMPILER ?= gcc
 # Target game version. Ensure the corresponding input ROM is placed in baseroms/$(VERSION)/baserom.z64.
 # Currently the following versions are supported:
 #   ntsc-1.0       N64 NTSC 1.0 (Japan/US depending on REGION)
@@ -825,6 +825,13 @@ endif
 
 all: rom compress
 
+# Convenience targets: debug ROM (map select, REG editor) and release ROM (NTSC 1.0 US)
+debug:
+	$(MAKE) VERSION=gc-eu-mq-dbg
+release:
+	$(MAKE) VERSION=ntsc-1.0 REGION=US
+both: debug release
+
 rom: $(ROM)
 ifneq ($(COMPARE),0)
 	@md5sum $(ROM)
@@ -834,6 +841,7 @@ ifneq ($(COMPARE),0)
 	@md5sum -c $(BASEROM_DIR)/checksum.md5
  endif
 endif
+	cp $(ROM) /mnt/c/Users/Jake/Desktop/
 
 compress: $(ROMC)
 ifneq ($(COMPARE),0)
@@ -883,7 +891,7 @@ endif
 	$(N64_EMULATOR) $<
 
 
-.PHONY: all rom compress clean assetclean distclean venv setup disasm run
+.PHONY: all rom compress clean assetclean distclean venv setup disasm run debug release both
 .DEFAULT_GOAL := rom
 
 #### Various Recipes ####

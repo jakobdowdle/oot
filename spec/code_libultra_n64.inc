@@ -19,7 +19,10 @@
     include "$(BUILD_DIR)/src/libultra/io/contquery.o"
     include "$(BUILD_DIR)/src/libultra/gu/lookathil.o"
     include "$(BUILD_DIR)/src/libultra/libc/xprintf.o"
+#ifndef COMPILER_GCC
+    // GCC builds place string.o in the boot segment instead (see spec), avoiding a duplicate definition
     include "$(BUILD_DIR)/src/libultra/libc/string.o"
+#endif
     include "$(BUILD_DIR)/src/libultra/io/sp.o"
 #if OOT_VERSION < PAL_1_0
     include "$(BUILD_DIR)/src/libultra/io/viswapbuf.o"
